@@ -2,6 +2,9 @@
 
 source('prepare_data.R')
 
+## > install.packages("ggplot2")
+## > install.packages("reshape2")
+## > install.packages("RColorBrewer")
 library(ggplot2)
 library(reshape2)
 library(RColorBrewer)
