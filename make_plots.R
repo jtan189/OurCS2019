@@ -35,6 +35,10 @@ likert.colors <- c(likert.blues, likert.grey, likert.greens)
 ##     geom_point(shape=1) +    # Use hollow circles
 ##     geom_smooth(method=lm)   # Add linear regression line 
 ##                              #  (by default includes 95% confidence region)
+h4.plot <- ggplot(survey.data, aes(x=current.privacy.concerns, y=initial.privacy.concerns)) +
+  geom_point(shape=1) +
+  geom_smooth(method=lm) +
+  geom_line()
 
 ## histograms:
 ##
@@ -92,4 +96,14 @@ stacked.plot <- ggplot(stacked.data,
                              reverse=TRUE)) +
     geom_hline(yintercept=c(0,100)) +
     coord_flip()    
+
+survey.data$concern.diff <- as.numeric(survey.data$current.privacy.concerns) -
+  +                         as.numeric(survey.data$initial.privacy.concerns)
+
+hist(survey.data$concern.diff)
+
+ggplot(survey.data, aes(months.owned, concern.diff)) + geom_point() + geom_smooth()
+
+ggplot(survey.data, aes(as.numeric(times.use.device.in.day), concern.diff)) + geom_point() + geom_smooth()
+
 

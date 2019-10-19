@@ -28,8 +28,10 @@ cat("\nDevice usage:\n")
 for (device.usage in device.usage.types) {
 
     cat(paste0("    ",
-        device.usage, ": ",
-        sum(survey.data[, device.usage]), " (",
+        device.usage,
+        ": ",
+        sum(survey.data[, device.usage]),
+        " (",
         round(sum(survey.data[, device.usage]) / nrow(survey.data) * 100,
               digits=2),
         "%)\n"))
@@ -151,3 +153,8 @@ h4.result <- cor.test(as.numeric(survey.data$current.privacy.concern),
                       survey.data$total.uses,
                       type="spearman")
 print(h4.result)
+
+
+survey.data$concern.diff <- as.numeric(survey.data$current.privacy.concerns) -
+                            as.numeric(survey.data$initial.privacy.concerns)
+
