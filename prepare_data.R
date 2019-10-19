@@ -11,7 +11,7 @@ options(error=recover)
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
 
-kSurveyFilename <- "data/Survey Results.csv"
+kSurveyFilename <- "Survey Results.csv"
 
 kSurveyColnames <- c(
     "start.date",
@@ -159,3 +159,8 @@ survey.data$age <- factor(survey.data$age,
 survey.data$work.it.or.cs.degree <- factor(survey.data$work.it.or.cs.degree,
                                                  levels=c("Yes", "No"))
 
+rm(kAge,
+   kLikertAgree,
+   kLikertCorrect,
+   kSurveyColnames,
+   kSurveyFilename)
