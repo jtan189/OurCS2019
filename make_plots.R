@@ -98,12 +98,12 @@ stacked.plot <- ggplot(stacked.data,
     coord_flip()    
 
 survey.data$concern.diff <- as.numeric(survey.data$current.privacy.concerns) -
-  +                         as.numeric(survey.data$initial.privacy.concerns)
+                            as.numeric(survey.data$initial.privacy.concerns)
 
-hist(survey.data$concern.diff)
+hist.concern.diff <- hist(survey.data$concern.diff)
 
-ggplot(survey.data, aes(months.owned, concern.diff)) + geom_point() + geom_smooth()
+months.owned.concern.diff.plot <- ggplot(survey.data, aes(months.owned, concern.diff)) + geom_point() + geom_smooth()
 
-ggplot(survey.data, aes(as.numeric(times.use.device.in.day), concern.diff)) + geom_point() + geom_smooth()
+times.use.concern.diff.plot <- ggplot(survey.data, aes(as.numeric(times.use.device.in.day), concern.diff)) + geom_point() + geom_smooth()
 
 
