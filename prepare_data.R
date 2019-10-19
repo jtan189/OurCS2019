@@ -9,9 +9,7 @@ options(error=recover)
 
 ## install packages with, e.g.:
 ## > install.packages("dplyr")
-
-suppressPackageStartupMessages(library(dplyr))
-## suppressPackageStartupMessages(library(ggplot2))
+library(dplyr)
 
 kSurveyFilename <- "Survey Results.csv"
 
@@ -91,30 +89,66 @@ survey.data <- survey.data %>%
 survey.data$month <- as.numeric(survey.data$month)
 survey.data$year <- as.numeric(survey.data$year)
 survey.data <- survey.data %>%
-  mutate(months.owned = (2019 - year) * 12 +
-                        (10 - month))
+    mutate(months.owned = (2019 - year) * 12 +
+               (10 - month))
 
 ## bin privacy knowledge
+
 survey.data <- survey.data %>%
-  mutate(mic.on.by.default.correct = mic.on.by.default %in% c("Probably correct",
-                                                              "Definitely correct"),
-         recordings.stored.by.company.correct = recordings.stored.by.company %in% 
-                                           c("Probably correct",
-                                             "Definitely correct"),
-         can.access.command.history.correct = can.access.command.history %in% 
-                                          c("Probably correct",
-                                            "Definitely correct"),
-         device.option.delete.data.correct = device.option.delete.data %in% 
-                                        c("Probably correct",
-                                          "Definitely correct"),
-         no.device.privacy.settings.correct = no.device.privacy.settings %in%
-                                                 c("Probably incorrect",
-                                                   "Definitely incorrect"),
-         total.correct = mic.on.by.default.correct +
-           can.access.command.history.correct +
-           device.option.delete.data.correct + 
-           no.device.privacy.settings.correct)
-         
+    mutate(mic.on.by.default.correct = mic.on.by.default %in%
+               c("Probably correct",
+                 "Definitely correct"),
+           recordings.stored.by.company.correct = recordings.stored.by.company %in% 
+               c("Probably correct",
+                 "Definitely correct"),
+           can.access.command.history.correct = can.access.command.history %in% 
+               c("Probably correct",
+                 "Definitely correct"),
+           device.option.delete.data.correct = device.option.delete.data %in% 
+               c("Probably correct",
+                 "Definitely correct"),
+           no.device.privacy.settings.correct = no.device.privacy.settings %in%
+               c("Probably incorrect",
+                 "Definitely incorrect"),
+           total.correct = mic.on.by.default.correct +
+               can.access.command.history.correct +
+               device.option.delete.data.correct + 
+               no.device.privacy.settings.correct)
+
+survey.data <- survey.data %>%
+    mutate(mic.on.by.default.believe = mic.on.by.default %in%
+               c("Probably correct",
+                 "Definitely correct"),
+           recordings.stored.by.company.believe = recordings.stored.by.company %in% 
+               c("Probably correct",
+                 "Definitely correct"),
+           can.access.command.history.believe = can.access.command.history %in% 
+               c("Probably correct",
+                 "Definitely correct"),
+           device.option.delete.data.believe = device.option.delete.data %in% 
+               c("Probably correct",
+                 "Definitely correct"),
+           no.device.privacy.settings.believe = no.device.privacy.settings %in%
+               c("Probably correct",
+                 "Definitely correct"))
+
+survey.data <- survey.data %>%
+    mutate(mic.on.by.default.dontbelieve = mic.on.by.default %in%
+               c("Probably incorrect",
+                 "Definitely incorrect"),
+           recordings.stored.by.company.dontbelieve = recordings.stored.by.company %in% 
+               c("Probably incorrect",
+                 "Definitely incorrect"),
+           can.access.command.history.dontbelieve = can.access.command.history %in% 
+               c("Probably incorrect",
+                 "Definitely incorrect"),
+           device.option.delete.data.dontbelieve = device.option.delete.data %in% 
+               c("Probably incorrect",
+                 "Definitely incorrect"),
+           no.device.privacy.settings.dontbelieve = no.device.privacy.settings %in%
+               c("Probably incorrect",
+                 "Definitely incorrect"))
+
 
 survey.data$times.use.device.in.day <- as.factor(survey.data$times.use.device.in.day)
 
@@ -130,7 +164,19 @@ survey.data$use.device.for.reminders <- survey.data$use.device.for.reminders != 
 survey.data$use.device.for.other <- survey.data$use.device.for.other != ""
 
 survey.data$gender <- as.factor(survey.data$gender)
-survey.data$education.level <- as.factor(survey.data$education.level)
+
+kEdu <- c(
+    "High school graduate (high school diploma or equivalent including GED)",
+    "Some college but no degree",   
+    "Associate degree in college (2-year)",                                  
+    "Bachelor's degree in college (4-year)",                                 
+    "Master's degree",                                                       
+    "Doctoral degree"
+)   
+
+survey.data$education.level <- factor(survey.data$education.level,
+                                      levels=kEdu,
+                                      ordered=TRUE)
 
 kLikertAgree <- c(
     "Strongly disagree",
@@ -156,8 +202,8 @@ kLikertCorrect <- c(
 )
 
 survey.data$mic.on.by.default <- factor(survey.data$mic.on.by.default,
-                                       levels=kLikertCorrect,
-                                       ordered=TRUE)
+                                        levels=kLikertCorrect,
+                                        ordered=TRUE)
 
 survey.data$recordings.stored.by.company <- factor(survey.data$recordings.stored.by.company,
                                                    levels=kLikertCorrect,
@@ -185,10 +231,63 @@ survey.data$age <- factor(survey.data$age,
                           ordered=TRUE)
 
 survey.data$work.it.or.cs.degree <- factor(survey.data$work.it.or.cs.degree,
-                                                 levels=c("Yes", "No"))
+                                           levels=c("Yes", "No"))
 
-rm(kAge,
-   kLikertAgree,
-   kLikertCorrect,
-   kSurveyColnames,
-   kSurveyFilename)
+survey.data$total.uses <- with(survey.data,
+                               use.device.for.audio +
+                               use.device.for.info +
+                               use.device.for.control.other.devices +
+                               use.device.for.conversation +
+                               use.device.for.shopping +
+                               use.device.for.alarm +
+                               use.device.for.weather +
+                               use.device.for.time +
+                               use.device.for.reminders +
+                               use.device.for.other)
+
+device.usage.types <- c(
+    "use.device.for.audio",
+    "use.device.for.info",
+    "use.device.for.control.other.devices",
+    "use.device.for.conversation",
+    "use.device.for.shopping",
+    "use.device.for.alarm",
+    "use.device.for.weather",
+    "use.device.for.time",
+    "use.device.for.reminders",
+    "use.device.for.other"
+)
+
+privacy.practices <- c(
+    "mic.on.by.default",
+    "recordings.stored.by.company",
+    "can.access.command.history",
+    "device.option.delete.data",
+    "no.device.privacy.settings"
+)
+
+privacy.practices.was.correct <- c(
+    "mic.on.by.default.correct",
+    "recordings.stored.by.company.correct",
+    "can.access.command.history.correct",
+    "device.option.delete.data.correct",
+    "no.device.privacy.settings.correct"
+)
+
+privacy.practices.beliefs <- c(
+    "mic.on.by.default.believe",
+    "recordings.stored.by.company.believe",
+    "can.access.command.history.believe",
+    "device.option.delete.data.believe",
+    "no.device.privacy.settings.believe"
+)
+
+privacy.practices.nonbeliefs <- c(
+    "mic.on.by.default.dontbelieve",
+    "recordings.stored.by.company.dontbelieve",
+    "can.access.command.history.dontbelieve",
+    "device.option.delete.data.dontbelieve",
+    "no.device.privacy.settings.dontbelieve"
+)
+
+
