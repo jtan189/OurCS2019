@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 ##
+## https://github.com/jtan189/OurCS2019
+##
 ## In an interactive R session or from another R script, run using:
 ## > source('prepare_data.R')
 
@@ -9,7 +11,7 @@ options(error=recover)
 ## > install.packages("dplyr")
 
 suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(ggplot2))
+## suppressPackageStartupMessages(library(ggplot2))
 
 kSurveyFilename <- "Survey Results.csv"
 
@@ -86,8 +88,34 @@ survey.data <- survey.data %>%
            -user.language,
            -gender.self.describe)
 
-survey.data$month <- factor(survey.data$month, levels=1:12)
-survey.data$year <- as.factor(survey.data$year)
+survey.data$month <- as.numeric(survey.data$month)
+survey.data$year <- as.numeric(survey.data$year)
+survey.data <- survey.data %>%
+  mutate(months.owned = (2019 - year) * 12 +
+                        (10 - month))
+
+## bin privacy knowledge
+survey.data <- survey.data %>%
+  mutate(mic.on.by.default.correct = mic.on.by.default %in% c("Probably correct",
+                                                              "Definitely correct"),
+         recordings.stored.by.company.correct = recordings.stored.by.company %in% 
+                                           c("Probably correct",
+                                             "Definitely correct"),
+         can.access.command.history.correct = can.access.command.history %in% 
+                                          c("Probably correct",
+                                            "Definitely correct"),
+         device.option.delete.data.correct = device.option.delete.data %in% 
+                                        c("Probably correct",
+                                          "Definitely correct"),
+         no.device.privacy.settings.correct = no.device.privacy.settings %in%
+                                                 c("Probably incorrect",
+                                                   "Definitely incorrect"),
+         total.correct = mic.on.by.default.correct +
+           can.access.command.history.correct +
+           device.option.delete.data.correct + 
+           no.device.privacy.settings.correct)
+         
+
 survey.data$times.use.device.in.day <- as.factor(survey.data$times.use.device.in.day)
 
 survey.data$use.device.for.audio <- survey.data$use.device.for.audio != ""
